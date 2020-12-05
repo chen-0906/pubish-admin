@@ -1,12 +1,14 @@
 <template>
   <el-container class="layout-container">
     <el-aside class="aside"
-              width="200px">
-      <AppAside class="aside-menu"></AppAside>
+              width="auto">
+      <AppAside class="aside-menu"
+                :is-collapse="isCollapse"
+      ></AppAside>
     </el-aside>
     <el-container>
       <el-header class="header">
-        <AppHeader></AppHeader>
+        <AppHeader @LisenterChangeCollapse = "changeCollapse"></AppHeader>
       </el-header>
       <el-main class="main">
         <router-view></router-view>
@@ -27,7 +29,7 @@ export default {
   },
   data () {
     return {
-
+      isCollapse : false
     }
   },
   computed: {
@@ -38,6 +40,9 @@ export default {
   watch: {
   },
   methods: {
+    changeCollapse(){
+      this.isCollapse = !this.isCollapse
+    }
   },
   filters: {
     fnName: function (value) {

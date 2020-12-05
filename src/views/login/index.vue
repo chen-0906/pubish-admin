@@ -125,7 +125,10 @@ export default {
           message : '登陆成功',
           type: 'success'
         })
-
+        // 将接口返回的用户相关数据存储到本地， 方便数据共享
+        // 本地存储只能存储 字符串
+        // 如果需要存储对象、数组相关的类型，则把他们转化为JSON格式的字符串进行存储
+        window.localStorage.setItem('user', JSON.stringify(res.data.data))
         //跳转到首页
         this.$router.push({
           name : 'home'

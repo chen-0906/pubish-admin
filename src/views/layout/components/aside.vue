@@ -3,6 +3,7 @@
   el-menu-item 的 index 不能重复，确保唯一即可
  -->
   <el-menu
+    :collapse = 'isCollapse'
     class="nav-menu"
     router
     default-active="/"
@@ -44,12 +45,11 @@
 <script>
 export default {
   name: 'AppAside',
-  props: {},
+  props: ['is-collapse'],
   components: {
   },
   data () {
     return {
-
     }
   },
   computed: {
