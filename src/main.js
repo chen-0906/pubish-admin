@@ -9,6 +9,8 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import "nprogress/nprogress.css";
 
+//json-bigint 会把超出 JS 安全整数范围的数字转为一个 BigNumber 类型的对象，对象数据是它内部的一个算法处理之后的，我们要做的就是在使用的时候转为字符串来使用。
+
 Vue.config.productionTip = false
 // 全局注册 element 组件库
 Vue.use(ElementUI)
