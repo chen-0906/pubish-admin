@@ -4,6 +4,7 @@ import Login from '@/views/login/index.vue'
 import Home from '@/views/home/index.vue'
 import Layout from '@/views/layout/index.vue'
 import Article from '@/views/article/index.vue'
+import Publish from '@/views/publish/index.vue'
 import NProgress from 'nprogress'
 
 
@@ -33,6 +34,12 @@ const routes = [
         // 路由的名字是 为了在动态路由中 根据路由的名字 进行访问 不比=需要拼接
         name: 'article',
         component: Article
+      },
+      {
+        path: '/publish', // path 为空 会作为默认子路由s
+        // 路由的名字是 为了在动态路由中 根据路由的名字 进行访问 不比=需要拼接
+        name: 'publish',
+        component: Publish
       }
     ]
   },

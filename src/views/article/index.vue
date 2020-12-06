@@ -123,6 +123,7 @@
               size="mini"
               circle
               icon="el-icon-edit"
+              @click="$router.push('/publish?id=' + scope.row.id)"
               type="primary"
             ></el-button>
             <el-button
@@ -172,6 +173,7 @@ export default {
         { status: 3, text: '审核失败', type: 'warning' }, // 3
         { status: 4, text: '已删除', type: 'danger' } // 4
       ],
+      // axios 不会发送数据位null unefiened之类的数据
       totalCount : 0,
       pageSize : 20,
       status : null, // 文章的状态 不传就是全部
