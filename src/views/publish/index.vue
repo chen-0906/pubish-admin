@@ -9,12 +9,22 @@
           </el-breadcrumb>
         </div>
       </div>
-      <el-form ref="form" :model="article" label-width="40px">
-        <el-form-item label="标题">
+      <el-form ref="publish-form"
+               :rules="fromRules"
+               :model="article"
+               label-width="80px">
+        <el-form-item label="标题" prop="title">
           <el-input v-model="article.title"></el-input>
         </el-form-item>
-        <el-form-item label="内容">
-          <el-input type="textarea" v-model="article.content"></el-input>
+        <el-form-item label="内容" prop="content">
+          <!-- <el-input type="textarea" v-model="article.content"></el-input> -->
+          <el-tiptap
+            v-model="article.content"
+            :extensions="extensions"
+            lang="zh"
+            height="350"
+            placeholder="请输入文章内容"
+          ></el-tiptap>
         </el-form-item>
         <el-form-item label="封面">
           <el-radio-group v-model="article.cover.type">
@@ -24,7 +34,7 @@
             <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="频道">
+        <el-form-item label="频道" prop="channel_id">
           <el-select v-model="article.channel_id" placeholder="请选择频道">
             <el-option
               :label="channel.name"
@@ -45,25 +55,107 @@
 
 <script>
   import { getArticleChannels, addArticle, updateArticle, getArticle } from "@/api/article";
-
+  import {
+    ElementTiptap,
+    Doc,
+    Text,
+    Paragraph,
+    Heading,
+    Bold,
+    Underline,
+    Italic,
+    Image,
+    Strike,
+    ListItem,
+    BulletList,
+    OrderedList,
+    TodoItem,
+    TodoList,
+    HorizontalRule,
+    Fullscreen,
+    Preview,
+    CodeBlock,
+    TextColor
+  } from 'element-tiptap'
+  import 'element-tiptap/lib/index.css'
+  import { uploadImage } from '@/api/image'
   export default {
   name: 'PublishIndex',
   props: {},
   components: {
+    'el-tiptap': ElementTiptap,
   },
   data () {
     return {
+      extensions: [
+        new Doc(),
+        new Text(),
+        new Paragraph(),
+        new Heading({ level: 3 }),
+        new Bold({ bubble: true }), // 在气泡菜单中渲染菜单按钮
+        new Image({
+          // 默认会把图片生成 base64 字符串和内容存储在一起，如果需要自定义图片上传
+          uploadRequest (file) {
+            // 如果接口要求 Content-Type 是 multipart/form-data，则请求体必须使用 FormData
+            const fd = new FormData()
+            fd.append('image', file)
+            // 第1个 return 是返回 Promise 对象
+            // 为什么？因为 axios 本身就是返回 Promise 对象
+            return uploadImage(fd).then(res => {
+              // 这个 return 是返回最后的结果
+              return res.data.data.url
+            })
+          } // 图片的上传方法，返回一个 Promise<url>
+        }),
+        new Underline(), // 下划线
+        new Italic(), // 斜体
+        new Strike(), // 删除线
+        new HorizontalRule(), // 华丽的分割线
+        new ListItem(),
+        new BulletList(), // 无序列表
+        new OrderedList(), // 有序列表
+        new TodoItem(),
+        new TodoList(),
+        new Fullscreen(),
+        new Preview(),
+        new CodeBlock(),
+        new TextColor()
+      ],
       channels: [],
       article: {
         title: '', // 文章标题
-        content : '', // 文章内容
+        content: `
+                <h1>Heading</h1>
+                <p>This Editor is awesome!</p>
+              `, // 文章内容
         cover : { // 文章封面
           type : 0, // 封面类型 -1:自动，0-无图，1-1张，3-3张
           images: [] // 封面图片的地址
         },
         channel_id: null
       },
-      article_id: null
+      article_id: null,
+      fromRules: {
+        title: [
+          { required: true, message: '请输入文章标题', trigger: 'blur' },
+          { min: 5, max: 30, message: '长度在 5 到 30 个字符', trigger: 'blur' }
+        ],
+        content: [
+          {
+            validator (rule, value, callback) {
+              if (value === '<p></p>'){
+                callback(new Error('请输入文章内容'))
+              } else {
+                callback()
+              }
+            }
+          },
+          { required: true, message: '请输入文章内容', trigger: 'blur' },
+        ],
+        channel_id: [
+          { required: true, message: '请选择文章频道'}
+        ]
+      }
     }
   },
   computed: {
@@ -83,6 +175,12 @@
   },
   methods: {
     onPublish(draft = false) {
+      this.$refs['publish-form'].validate(valid => {
+        // 验证失败停止提交表单
+        if (!valid){
+          return
+        }
+      })
       if (this.article_id){
         updateArticle(this.article_id, this.article, draft).then(res => {
           console.log(res)
@@ -117,11 +215,6 @@
       getArticle(this.article_id).then(res => {
         //this.article = res.data.data
       })
-    }
-  },
-  filters: {
-    fnName: function (value) {
-      return value
     }
   }
 }
