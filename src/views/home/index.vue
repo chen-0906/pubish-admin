@@ -1,6 +1,8 @@
 <template>
   <div>
     <h1>首页</h1>
+    <div id="container"></div>
+    <input type="file">
   </div>
 </template>
 
@@ -18,7 +20,11 @@ export default {
   computed: {
   },
   created() {},
-  mounted() {},
+  mounted() {
+    var map = new window.BMapGL.Map("container");
+    var point = new window.BMapGL.Point(116.404, 39.915);
+    map.centerAndZoom(point, 15);
+  },
   watch: {
   },
   methods: {

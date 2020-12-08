@@ -32,6 +32,8 @@
 
 <script>
   import {getUserProfile} from "@/api/user";
+  import globalBus from '@/utils/global-bus'
+
   export default {
     name: 'AppHeader',
     components: {},
@@ -46,6 +48,12 @@
     watch: {},
     created () {
       this.loadUserProfile()
+      globalBus.$on('update-user', (data) => {
+        // 因为 如果是对象的话 是引用类型
+        // 虎相互影响 传字符串不会这样
+        this.user.name = data.name
+        this.user.photo = data.photo
+      })
     },
     mounted () {},
     methods: {
